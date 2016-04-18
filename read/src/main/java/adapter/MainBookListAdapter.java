@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
 
@@ -27,11 +28,13 @@ public class MainBookListAdapter extends BaseAdapter {
     private Context context;
     private List<Books> list;
     private RequestQueue mQueue;
+    private ImageLoader imageLoader;
 
     public MainBookListAdapter(Context context, List<Books> list) {
         this.context = context;
         this.list = list;
         mQueue = Volley.newRequestQueue(context);
+        imageLoader = new ImageLoader(mQueue, BitmapCache.instance());
     }
 
 
@@ -56,7 +59,7 @@ public class MainBookListAdapter extends BaseAdapter {
         if (convertView == null) {
             vh = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.mainlistviewitem, null);
-            vh.iv = (ImageView) convertView.findViewById(R.id.imageview);
+            vh.iv = (NetworkImageView) convertView.findViewById(R.id.imageview);
             vh.tv_author = (TextView) convertView.findViewById(R.id.item_author);
             vh.tv_title = (TextView) convertView.findViewById(R.id.title);
             vh.tv_chapter = (TextView) convertView.findViewById(R.id.item_chapter);
@@ -67,17 +70,17 @@ public class MainBookListAdapter extends BaseAdapter {
         vh.tv_author.setText(list.get(position).getAuthor());
         vh.tv_title.setText(list.get(position).getTitle());
         vh.tv_chapter.setText("更新至" + list.get(position).getChapterCount() + "章");
-        ImageLoader.ImageListener listener = ImageLoader.getImageListener(vh.iv,
-                0, R.drawable.default_big_icon);
-        ImageLoader imageLoader = new ImageLoader(mQueue, new BitmapCache());
-        imageLoader.get(list.get(position).getCover(), listener);
+        ImageLoader imageLoader = new ImageLoader(mQueue,BitmapCache.instance());
 
+        vh.iv.setDefaultImageResId(R.drawable.default_big_icon);
+        vh.iv.setErrorImageResId(R.drawable.default_big_icon);
+        vh.iv.setImageUrl(list.get(position).getCover(), imageLoader);
         return convertView;
     }
 
 }
 
 class ViewHolder {
-    ImageView iv;
+    NetworkImageView iv;
     TextView tv_title, tv_author, tv_chapter;
 }

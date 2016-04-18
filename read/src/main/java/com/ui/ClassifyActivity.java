@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,6 +17,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class ClassifyActivity extends Activity {
 
     private TextView tv_title;
     private ImageView iv_search, iv_back;
-    private ListView listview;
+    private PullToRefreshListView listview;
 
     private String path = "http://api.manyanger.com:8101/novel/novelList.htm?pageNo=%d&theme=";
     private int id;
@@ -39,7 +40,8 @@ public class ClassifyActivity extends Activity {
     private int currentPage = 0;
     private MainBookListAdapter adapter;
 
-    private int visibleLastIndex = 0;   //最后的可视项索引
+    private String lastJson;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,20 +53,14 @@ public class ClassifyActivity extends Activity {
         id = getIntent().getExtras().getInt("ID");
         path = path + id;
         downLoadJson();
-        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+        listview.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+        listview.setRefreshingLabel("加载中");
+        listview.setReleaseLabel("松开手指加载更多");
+        listview.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                int itemsLastIndex = adapter.getCount() - 1;    //数据集最后一项的索引
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && visibleLastIndex == itemsLastIndex) {
-                    //如果是自动加载,可以在这里放置异步加载数据的代码
-                    currentPage++;
-                    addView();
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                visibleLastIndex = firstVisibleItem + visibleItemCount - 1;
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                currentPage++;
+                addView();
             }
         });
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,7 +88,7 @@ public class ClassifyActivity extends Activity {
         tv_title = (TextView) findViewById(R.id.title);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_search = (ImageView) findViewById(R.id.iv_search);
-        listview = (ListView) findViewById(R.id.listiew);
+        listview = (PullToRefreshListView) findViewById(R.id.listiew);
         list = new ArrayList<>();
         iv_search.setVisibility(View.GONE);
     }
@@ -102,6 +98,7 @@ public class ClassifyActivity extends Activity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        lastJson = response;
                         list.addAll(ParserJson.parserClassifyJson(response));
                         adapter = new MainBookListAdapter(ClassifyActivity.this, list);
                         listview.setAdapter(adapter);
@@ -123,8 +120,15 @@ public class ClassifyActivity extends Activity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        list.addAll(ParserJson.parserClassifyJson(response));
-                        adapter.notifyDataSetChanged();
+                        if (!lastJson.equals(response)) {
+                            lastJson = response;
+                            list.addAll(ParserJson.parserClassifyJson(response));
+                            adapter.notifyDataSetChanged();
+                            listview.onRefreshComplete();
+                        }else{
+                            Toast.makeText(ClassifyActivity.this, "没有更多了", Toast.LENGTH_SHORT).show();
+                            listview.onRefreshComplete();
+                        }
                     }
                 }, new Response.ErrorListener() {
 

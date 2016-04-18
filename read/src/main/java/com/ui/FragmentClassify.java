@@ -37,8 +37,6 @@ public class FragmentClassify extends Fragment{
     private String path = "http://api.manyanger.com:8101/novel/novelTheme.htm";
     private RequestQueue mQueue;
 
-//    private ImageView iv_back,iv_search;
-//    private TextView tv_title;
 
     @Nullable
     @Override
@@ -48,12 +46,6 @@ public class FragmentClassify extends Fragment{
         list = new ArrayList<>();
         mQueue = Volley.newRequestQueue(getContext());
         downLoadJson();
-//        iv_back = (ImageView) view.findViewById(R.id.iv_back);
-//        iv_search = (ImageView) view.findViewById(R.id.iv_search);
-//        tv_title = (TextView) view.findViewById(R.id.title);
-//        iv_back.setVisibility(View.GONE);
-//        iv_search.setVisibility(View.GONE);
-//        tv_title.setText("分类阅读");
         return view;
     }
 

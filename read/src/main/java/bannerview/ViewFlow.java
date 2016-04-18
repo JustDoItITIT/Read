@@ -312,7 +312,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 	}
 
 	@Override
+	public boolean canScrollHorizontally(int direction) {
+		return true;
+	}
+
+	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		getParent().requestDisallowInterceptTouchEvent(true);
 		if (getChildCount() == 0)
 			return false;
 
@@ -330,6 +336,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			 * If being flinged and user touches, stop the fling. isFinished
 			 * will be false if being flinged.
 			 */
+			getParent().requestDisallowInterceptTouchEvent(true);
 			if (!mScroller.isFinished()) {
 				mScroller.abortAnimation();
 			}
@@ -344,6 +351,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			break;
 
 		case MotionEvent.ACTION_MOVE:
+			getParent().requestDisallowInterceptTouchEvent(true);
 			final int xDiff = (int) Math.abs(x - mLastMotionX);
 
 			boolean xMoved = xDiff > mTouchSlop;
@@ -376,6 +384,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			break;
 
 		case MotionEvent.ACTION_UP:
+			getParent().requestDisallowInterceptTouchEvent(true);
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
@@ -415,6 +424,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
+			getParent().requestDisallowInterceptTouchEvent(true);
 			snapToDestination();
 			mTouchState = TOUCH_STATE_REST;
 		}

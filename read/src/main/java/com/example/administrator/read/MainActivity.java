@@ -195,23 +195,23 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         switch (v.getId()) {
             case R.id.item_main:
                 vp.setCurrentItem(0);
-                ll_main.setImageResource(R.drawable.tab1_2);
+                ll_main.setImageResource(R.drawable.ic_recommand_pressed);
                 title.setText("首页");
                 break;
             case R.id.item_bookshelf:
                 vp.setCurrentItem(1);
-                ll_bookshelf.setImageResource(R.drawable.tab2_2);
+                ll_bookshelf.setImageResource(R.drawable.ic_bookshelf_pressed);
                 title.setText("本地书架");
                 break;
             case R.id.item_classify:
                 vp.setCurrentItem(2);
-                ll_classify.setImageResource(R.drawable.tab3_2);
+                ll_classify.setImageResource(R.drawable.ic_hot_pressed);
                 title.setText("分类阅读");
                 iv_search.setVisibility(View.GONE);
                 break;
             case R.id.item_more:
                 vp.setCurrentItem(3);
-                ll_more.setImageResource(R.drawable.tab4_2);
+                ll_more.setImageResource(R.drawable.ic_personal_pressed);
                 title.setText("个人界面");
                 iv_search.setVisibility(View.GONE);
                 break;
@@ -223,10 +223,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public void reset() {
-        ll_main.setImageResource(R.drawable.tab1_1);
-        ll_bookshelf.setImageResource(R.drawable.tab2_1);
-        ll_classify.setImageResource(R.drawable.tab3_1);
-        ll_more.setImageResource(R.drawable.tab4_1);
+        ll_main.setImageResource(R.drawable.ic_recommand_nor);
+        ll_bookshelf.setImageResource(R.drawable.ic_bookshelf_nor);
+        ll_classify.setImageResource(R.drawable.ic_hot_nor);
+        ll_more.setImageResource(R.drawable.ic_personal_nor);
         iv_search.setVisibility(View.VISIBLE);
     }
 

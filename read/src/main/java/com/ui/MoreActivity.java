@@ -64,7 +64,7 @@ public class MoreActivity extends Activity {
         StringRequest stringRequest = new StringRequest(path,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(final String response) {
                         try {
                             JSONObject jo = new JSONObject(response);
                             JSONArray ja = jo.getJSONObject("chapterList").getJSONArray("result");
@@ -83,10 +83,12 @@ public class MoreActivity extends Activity {
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Intent intent = new Intent(MoreActivity.this,ReadActivity.class);
                                 Bundle bundle = new Bundle();
-                                bundle.putString("title",list.get(position).getTitle_cha());
-                                bundle.putInt("ID",list.get(position).getId_cha());
+                                bundle.putString("title", list.get(position).getTitle_cha());
+                                bundle.putInt("ID", list.get(position).getId_cha());
+                                bundle.putInt("position", position);
+                                bundle.putInt("count", list.size());
                                 intent.putExtras(bundle);
-                                startActivity(intent);
+                                startActivityForResult(intent, 2);
                             }
                         });
                     }
@@ -103,4 +105,18 @@ public class MoreActivity extends Activity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int position = data.getExtras().getInt("position");
+        if(requestCode == 2 && resultCode == 1){
+            Intent intent = new Intent(MoreActivity.this,ReadActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("title", list.get(position).getTitle_cha());
+            bundle.putInt("ID", list.get(position).getId_cha());
+            bundle.putInt("position", position);
+            intent.putExtras(bundle);
+            startActivityForResult(intent, 2);
+        }
+
+    }
 }

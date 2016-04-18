@@ -30,7 +30,7 @@ import util.SetListHeight;
 public class SearchActivity extends Activity {
 
     private ListView listview;
-    private TextView title;
+    private TextView title,tv_search_none;
     private ImageView iv_search, iv_back;
 
     private List<Books> list;
@@ -52,6 +52,7 @@ public class SearchActivity extends Activity {
         listview = (ListView) findViewById(R.id.listview);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_search = (ImageView) findViewById(R.id.iv_search);
+        tv_search_none = (TextView) findViewById(R.id.tv_search_none);
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,14 +71,17 @@ public class SearchActivity extends Activity {
                     @Override
                     public void onResponse(String response) {
                         list.addAll(ParserJson.parserClassifyJson(response));
+                        if(list.size() == 0){
+                            tv_search_none.setVisibility(View.VISIBLE);
+                        }
                         listview.setAdapter(new MainBookListAdapter(SearchActivity.this, list));
                         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Intent intent = new Intent();
-                                intent.setClass(SearchActivity.this,DetailActivity.class);
+                                intent.setClass(SearchActivity.this, DetailActivity.class);
                                 Bundle bundle = new Bundle();
-                                bundle.putInt("ID",list.get(position).getId());
+                                bundle.putInt("ID", list.get(position).getId());
                                 startActivity(intent);
                             }
                         });

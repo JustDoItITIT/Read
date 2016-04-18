@@ -63,7 +63,7 @@ public class ShelfGridViewAdapter extends BaseAdapter {
         vh.tv.setText(list.get(position).getTitle());
         ImageLoader.ImageListener listener = ImageLoader.getImageListener(vh.iv,
                 R.drawable.default_big_icon, R.drawable.default_big_icon);
-        ImageLoader imageLoader = new ImageLoader(mQueue, new BitmapCache());
+        ImageLoader imageLoader = new ImageLoader(mQueue, BitmapCache.instance());
         imageLoader.get(list.get(position).getCover(), listener);
         return convertView;
     }

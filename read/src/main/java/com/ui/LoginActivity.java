@@ -1,7 +1,9 @@
 package com.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
+import com.example.administrator.read.ReadApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +38,8 @@ public class LoginActivity extends Activity {
 
     private ImageView iv_back;
 
-
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
 
 
     @Override
@@ -43,6 +47,8 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mQueue = Volley.newRequestQueue(this);
+        preferences=getSharedPreferences("login", Context.MODE_PRIVATE);
+        editor=preferences.edit();
         init();
     }
 
@@ -67,13 +73,14 @@ public class LoginActivity extends Activity {
                                     JSONObject jo = new JSONObject(response);
                                     Log.i("lll",jo.getString("BackMessage"));
                                     String username = jo.getJSONObject("Member").getString("username");
+                                    int userID = jo.getJSONObject("Member").getInt("id");
                                     if (jo.getString("BackMessage").equals("成功")) {
                                         Toast.makeText(LoginActivity.this, "欢迎回来　\n" + username, Toast.LENGTH_SHORT).show();
-                                        EventBus.getDefault().post(new LoginMessage(username));
+                                        EventBus.getDefault().post(new LoginMessage(username,userID));
                                         /**
                                          * 发送消息给fragmentmine
                                          * */
-
+                                        ReadApplication.getInstance().setFlag(true);
                                         LoginActivity.this.finish();
 
                                     } else {

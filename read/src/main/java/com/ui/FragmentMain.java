@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -143,7 +144,6 @@ public class FragmentMain extends Fragment implements View.OnClickListener {
                         SetListHeight.setListViewHeight(lv_competitive);
                         SetListHeight.setListViewHeight(lv_recommend);
                         sv.smoothScrollTo(0, 20);
-                        Log.i("LOding","ajklshdjlahdlald");
                         EventBus.getDefault().post(new ProgressEvent());
                         lv_competitive.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override

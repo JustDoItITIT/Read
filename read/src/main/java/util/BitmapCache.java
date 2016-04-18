@@ -10,9 +10,12 @@ import com.android.volley.toolbox.ImageLoader;
  */
 public class BitmapCache implements ImageLoader.ImageCache {
 
+    private static BitmapCache bitmapCache;
+
+
     private LruCache<String, Bitmap> mCache;
 
-    public BitmapCache() {
+    private BitmapCache() {
         int maxSize = 10 * 1024 * 1024;
         mCache = new LruCache<String, Bitmap>(maxSize) {
             @Override
@@ -31,5 +34,13 @@ public class BitmapCache implements ImageLoader.ImageCache {
     public void putBitmap(String url, Bitmap bitmap) {
         mCache.put(url, bitmap);
     }
+
+    public static BitmapCache instance(){
+        if(bitmapCache == null){
+            bitmapCache = new BitmapCache();
+        }
+        return bitmapCache;
+    }
+
 
 }

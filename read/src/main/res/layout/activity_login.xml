@@ -18,6 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:src="@drawable/back" />
 
 
@@ -60,6 +62,9 @@
                 android:id="@+id/login_username"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:drawableRight="@drawable/search_clear_pressed"
                 android:background="@drawable/textview_frame" />
         </LinearLayout>
 
@@ -84,6 +89,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:background="@drawable/textview_frame"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:drawableRight="@drawable/search_clear_pressed"
                 android:inputType="textPassword" />
         </LinearLayout>
 

@@ -83,7 +83,7 @@ public class DetailActivity extends Activity {
     }
 
     public void setProgress(){
-        animation = AnimationUtils.loadAnimation(this,R.anim.progress);
+        animation = AnimationUtils.loadAnimation(this, R.anim.progress);
         animation.setRepeatMode(Animation.RESTART);
         animation.setRepeatCount(Animation.INFINITE);
         iv_progress.setAnimation(animation);
@@ -183,10 +183,12 @@ public class DetailActivity extends Activity {
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
                                 Bundle bundle = new Bundle();
-                                bundle.putInt("ID",bd.getBooklist().get(position).getId_cha());
-                                bundle.putString("title",bd.getBooklist().get(position).getTitle_cha());
+                                bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
+                                bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
+                                bundle.putInt("position", position);
+                                bundle.putInt("count", bd.getBooklist().size());
                                 intent.putExtras(bundle);
-                                startActivity(intent);
+                                startActivityForResult(intent, 2);
                             }
                         });
                     }
@@ -203,8 +205,25 @@ public class DetailActivity extends Activity {
     private void downloadImg() {
         ImageLoader.ImageListener listener = ImageLoader.getImageListener(iv,
                 R.drawable.default_big_icon, R.drawable.default_big_icon);
-        ImageLoader imageLoader = new ImageLoader(mQueue, new BitmapCache());
+        ImageLoader imageLoader = new ImageLoader(mQueue, BitmapCache.instance());
         imageLoader.get(bd.getCover(), listener);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(data != null){
+            int position = data.getExtras().getInt("position");
+            if(requestCode == 2 && resultCode == 1){
+                Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
+                bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
+                bundle.putInt("position", position);
+                intent.putExtras(bundle);
+                startActivityForResult(intent, 2);
+            }
+        }
+
     }
 
 }
