@@ -60,5 +60,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
     </style>
-
+    <style name="AppSplash" parent="android:Theme">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

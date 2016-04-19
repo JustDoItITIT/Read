@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.example.administrator.read.R;
 import com.example.administrator.read.ReadApplication;
 
@@ -25,26 +26,27 @@ import de.greenrobot.event.EventBus;
 public class FragmentLogin extends Fragment {
 
     private View view;
-    private LinearLayout ll_login,ll_unlogin;
-    private Button bt_login,bt_regist,bt_order,bt_esc,bt_about;
+    private LinearLayout ll_login, ll_unlogin;
+    private Button bt_login, bt_regist, bt_order, bt_esc, bt_about;
     private TextView tv_username;
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
     private Boolean isLogined = false;
+    private int userID;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_mine,null);
+        view = inflater.inflate(R.layout.fragment_mine, null);
         EventBus.getDefault().register(this);
-        preferences=getActivity().getSharedPreferences("login", Context.MODE_PRIVATE);
-        editor=preferences.edit();
+        preferences = getActivity().getSharedPreferences("login", Context.MODE_PRIVATE);
+        editor = preferences.edit();
         initView();
         return view;
     }
 
-    private void initView(){
+    private void initView() {
         bt_order = (Button) view.findViewById(R.id.bt_orders);
         bt_esc = (Button) view.findViewById(R.id.bt_esc);
         bt_about = (Button) view.findViewById(R.id.bt_about);
@@ -95,20 +97,31 @@ public class FragmentLogin extends Fragment {
         });
 
 
-
         isLogined = ReadApplication.getInstance().getFlag();
-        if(isLogined){
-            tv_username.setText("用戶名  ： " + preferences.getString("username","null"));
+        if (isLogined) {
+            tv_username.setText("用戶名  ： " + preferences.getString("username", "null"));
+            userID = preferences.getInt("userID", 0);
             ll_login.setVisibility(View.VISIBLE);
             ll_unlogin.setVisibility(View.GONE);
-        }else{
+        } else {
             ll_unlogin.setVisibility(View.VISIBLE);
         }
 
         bt_about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),AboutActivity.class);
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+            }
+        });
+        bt_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putInt("userID", userID);
+                intent.putExtras(bundle);
+                intent.setClass(getActivity(), OrderedActivity.class);
                 startActivity(intent);
             }
         });
@@ -124,7 +137,7 @@ public class FragmentLogin extends Fragment {
         tv_username.setText(event.getUsername());
         ll_login.setVisibility(View.VISIBLE);
         ll_unlogin.setVisibility(View.GONE);
-
+        userID = event.getUserID();
     }
 }
 

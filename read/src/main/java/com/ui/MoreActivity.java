@@ -1,8 +1,12 @@
 package com.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -15,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
+import com.example.administrator.read.ReadApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import adapter.CatalogAdapter;
 import bean.BookDetailList;
@@ -35,13 +41,21 @@ public class MoreActivity extends Activity {
     private String path = "http://api.manyanger.com:8101/novel/chapterList.htm?id=";
     private int id;
     private RequestQueue mQueue;
-
+    private List<String> results = new ArrayList<>();
+    private SharedPreferences sp_record;
+    private SharedPreferences.Editor ed_record;
+    private boolean buyed = false;
+    private List<String> list_id = new ArrayList<>();
+    private String result;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more);
         id = getIntent().getExtras().getInt("ID");
+        sp_record = getSharedPreferences("buy_record", Context.MODE_PRIVATE);
+        ed_record = sp_record.edit();
         mQueue = Volley.newRequestQueue(this);
         init();
         downloadData();
@@ -58,7 +72,31 @@ public class MoreActivity extends Activity {
                 MoreActivity.this.finish();
             }
         });
-    }
+        /**
+         * 获取sp中的数据 遍历书本ID 查看购买记录
+         * 改变按钮
+         * */
+
+        Map<String,?> map = sp_record.getAll();
+        for (String key : map.keySet()) {
+            list_id.add(key);
+        }
+        name = id + "";
+        for (int i = 0 ; i < list_id.size() ; i ++ ){
+            if(name.equals(list_id.get(i))){
+                result = sp_record.getString(name,"null");
+                if("all".equals(result)){
+                    buyed = true;
+                }else{
+                    String[] a = result.split(",");
+                    for (int j = 0 ; j < a.length ; j ++)
+                    {
+                        results.add(a[j]);
+                    }
+                    results.remove(0);
+                }
+            }
+        }}
 
     private void downloadData(){
         StringRequest stringRequest = new StringRequest(path,
@@ -77,18 +115,82 @@ public class MoreActivity extends Activity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        lv_more.setAdapter(new CatalogAdapter(list,MoreActivity.this));
+                        final CatalogAdapter adapter = new CatalogAdapter(list, MoreActivity.this);
+                        lv_more.setAdapter(adapter);
+                        for(int i = 0 ; i < results.size();i ++){
+                            int a = Integer.parseInt(results.get(i));
+                            setFlag(a,adapter);
+                        }
+                        for (int i = 0 ; i < list_id.size() ; i ++ ){
+                            if(name.equals(list_id.get(i))){
+                                result = sp_record.getString(name,"null");
+                                if("all".equals(result)){
+                                    for (int j = 0 ; j < list.size();j++){
+                                        list.get(j).setFlag(true);
+                                    }
+                                }
+                            }
+                        }
                         lv_more.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Intent intent = new Intent(MoreActivity.this,ReadActivity.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString("title", list.get(position).getTitle_cha());
-                                bundle.putInt("ID", list.get(position).getId_cha());
-                                bundle.putInt("position", position);
-                                bundle.putInt("count", list.size());
-                                intent.putExtras(bundle);
-                                startActivityForResult(intent, 2);
+                            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                                /**
+                                 * 第一章免费 后面收费
+                                 * */
+                                if(buyed){
+                                    jump(position);
+                                }
+                                else if(position == 0){
+                                    jump(position);
+                                }
+                                else{
+                                    boolean flag = false;
+                                    if(results.size() > 0){
+                                        for (int i = 0 ; i < results.size() ; i ++){
+                                            int p = Integer.parseInt(results.get(i));
+                                            if(p == position){
+                                                jump(position);
+                                                flag = true;
+                                            }
+                                        }
+                                    }
+                                    if(!flag){
+                                        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(MoreActivity.this);
+                                        builder.setMessage("确定购买本章节内容吗？");
+                                        builder.setTitle("提示");
+                                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                StringBuilder sb = new StringBuilder();
+                                                sb.append(result);
+                                                sb.append("," + position);
+
+                                                String b[] = sb.toString().split(",");
+                                                results.clear();
+                                                for (int j = 0; j < b.length; j++) {
+                                                    results.add(b[j]);
+                                                }
+                                                results.remove(0);
+                                                for(int i = 0 ; i < results.size();i ++){
+                                                    int a = Integer.parseInt(results.get(i));
+                                                    setFlag(a,adapter);
+                                                }
+                                                Log.i("fuck",results.toString());
+                                                ed_record.putString(name, sb.toString());
+                                                ed_record.commit();
+                                                jump(position);
+                                            }
+                                        });
+
+                                        builder.setNegativeButton("取消",
+                                                new android.content.DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+
+                                        builder.create().show();
+                                    }}
                             }
                         });
                     }
@@ -105,18 +207,23 @@ public class MoreActivity extends Activity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int position = data.getExtras().getInt("position");
-        if(requestCode == 2 && resultCode == 1){
-            Intent intent = new Intent(MoreActivity.this,ReadActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("title", list.get(position).getTitle_cha());
-            bundle.putInt("ID", list.get(position).getId_cha());
-            bundle.putInt("position", position);
-            intent.putExtras(bundle);
-            startActivityForResult(intent, 2);
-        }
 
+
+    public void jump(int position){
+        Intent intent = new Intent(MoreActivity.this, ReadActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("title", list.get(position).getTitle_cha());
+        bundle.putInt("ID", list.get(position).getId_cha());
+        bundle.putInt("position", position);
+        bundle.putInt("count", list.size());
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 2);
     }
+
+    public void setFlag(int position,CatalogAdapter adapter){
+        list.get(position).setFlag(true);
+        adapter.notifyDataSetChanged();
+    }
+
+
 }

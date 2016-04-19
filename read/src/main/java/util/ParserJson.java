@@ -13,6 +13,7 @@ import bean.BookDetail;
 import bean.BookDetailList;
 import bean.Books;
 import bean.GVItem;
+import bean.OrderMessage;
 
 /**
  * Created by Administrator on 2016/4/8.
@@ -117,4 +118,24 @@ public class ParserJson {
         return null;
     }
 
+    public static List<OrderMessage> parserOrderedJson(String Json){
+        List< OrderMessage> list = new ArrayList<>();
+        try {
+            JSONObject jo = new JSONObject(Json);
+            JSONArray ja = jo.getJSONArray("orderList");
+            for (int i = 0; i<ja.length() ; i ++){
+                OrderMessage om = new OrderMessage();
+                JSONObject jo1 = ja.getJSONObject(i);
+                om.setGoodPrice(jo1.getString("goodPrice"));
+                om.setOrder_time(jo1.getString("payTime"));
+                om.setOrderStatus(jo1.getString("orderStatus"));
+                om.setOrderType(jo1.getString("orderType"));
+                list.add(om);
+            }
+            return list;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+            return null;
+    }
 }

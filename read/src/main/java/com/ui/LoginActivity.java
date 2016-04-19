@@ -29,9 +29,8 @@ import de.greenrobot.event.EventBus;
 public class LoginActivity extends Activity {
 
 
-
-    private Button bt_login,bt_register;
-    private CleanableEditText et_username,et_password;
+    private Button bt_login, bt_register;
+    private CleanableEditText et_username, et_password;
 
     private String path = "http://api.manyanger.com:8101/manyanger/login.htm?username=%s&password=%s";
     private RequestQueue mQueue;
@@ -47,14 +46,13 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mQueue = Volley.newRequestQueue(this);
-        preferences=getSharedPreferences("login", Context.MODE_PRIVATE);
-        editor=preferences.edit();
+        preferences = getSharedPreferences("login", Context.MODE_PRIVATE);
+        editor = preferences.edit();
         init();
     }
 
 
-
-    private void init(){
+    private void init() {
         bt_login = (Button) findViewById(R.id.button_login);
         bt_register = (Button) findViewById(R.id.button_register);
         et_username = (CleanableEditText) findViewById(R.id.login_username);
@@ -71,12 +69,15 @@ public class LoginActivity extends Activity {
                             public void onResponse(String response) {
                                 try {
                                     JSONObject jo = new JSONObject(response);
-                                    Log.i("lll",jo.getString("BackMessage"));
+                                    Log.i("lll", jo.getString("BackMessage"));
                                     String username = jo.getJSONObject("Member").getString("username");
                                     int userID = jo.getJSONObject("Member").getInt("id");
                                     if (jo.getString("BackMessage").equals("成功")) {
                                         Toast.makeText(LoginActivity.this, "欢迎回来　\n" + username, Toast.LENGTH_SHORT).show();
-                                        EventBus.getDefault().post(new LoginMessage(username,userID));
+                                        EventBus.getDefault().post(new LoginMessage(username, userID));
+                                        editor.putString("username", username);
+                                        editor.putInt("userID", userID);
+                                        editor.commit();
                                         /**
                                          * 发送消息给fragmentmine
                                          * */
@@ -104,7 +105,7 @@ public class LoginActivity extends Activity {
         bt_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this,RegistActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegistActivity.class);
                 startActivity(intent);
             }
         });

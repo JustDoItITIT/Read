@@ -29,7 +29,6 @@ public class ReadActivity extends Activity {
     private RequestQueue mQueue;
     private String path = "http://api.manyanger.com:8101/novel/novelRead.htm?chapterId=";
 
-    private Button bt_last,bt_next;
     private int position,count;
 
     @Override
@@ -58,41 +57,7 @@ public class ReadActivity extends Activity {
             }
         });
         tv_title.setText(title);
-
-        bt_last = (Button) findViewById(R.id.bt_last);
-        bt_next = (Button) findViewById(R.id.bt_next);
-
-        bt_last.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(position == 0){
-                    Toast.makeText(ReadActivity.this,"已是第一章",Toast.LENGTH_SHORT).show();
-                }else {
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("position", position - 1);
-                    intent.putExtras(bundle);
-                    setResult(1, intent);
-                    ReadActivity.this.finish();
-                }
-            }
-        });
-
-        bt_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    if(position == count - 1){
-                        Toast.makeText(ReadActivity.this,"已是最后一章",Toast.LENGTH_SHORT).show();
-                    }else{
-                        Intent intent = new Intent();
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("position", position + 1);
-                        intent.putExtras(bundle);
-                        setResult(1, intent);
-                        ReadActivity.this.finish();
-                    }
-            }
-        });
+        tv_title.setTextSize(25);
 
     }
 
@@ -104,6 +69,7 @@ public class ReadActivity extends Activity {
                         try {
                             JSONObject jo = new JSONObject(response);
                             mBookContent.setText(Html.fromHtml(jo.getJSONObject("chapter").getString("content")));
+                            mBookContent.setTextSize(20);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

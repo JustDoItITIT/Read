@@ -51,12 +51,22 @@ public class CatalogAdapter extends BaseAdapter {
             vh = new CatalogViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.catalogitem,null);
             vh.tv_title = (TextView) convertView.findViewById(R.id.title);
+            vh.tv_flag = (TextView) convertView.findViewById(R.id.flag);
             convertView.setTag(vh);
         }else{
            vh = (CatalogViewHolder) convertView.getTag();
         }
         vh.tv_title.setText(list.get(position).getTitle_cha());
 
+        if(position == 0){
+            vh.tv_flag.setVisibility(View.VISIBLE);
+            vh.tv_flag.setText("免费阅读");
+        }else if(list.get(position).isFlag()){
+            vh.tv_flag.setText("已购买");
+            vh.tv_flag.setVisibility(View.VISIBLE);
+        }else{
+            vh.tv_flag.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
@@ -65,6 +75,6 @@ public class CatalogAdapter extends BaseAdapter {
 }
 
 class CatalogViewHolder{
-    TextView tv_title;
+    TextView tv_title,tv_flag;
 
 }

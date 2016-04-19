@@ -41,4 +41,9 @@ public class SplashActivity extends Activity {
         });
         handler.sendEmptyMessageDelayed(1, 2000);
     }
+
+
+    @Override
+    public void onBackPressed() {
+    }
 }

@@ -3,16 +3,20 @@ package com.example.administrator.read;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private LinearLayout ll_search;
     private RelativeLayout rl_layout;
 
+    private boolean flag = false;
 
     /**
      * 加载
@@ -47,6 +52,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private RelativeLayout rl_progress;
     private ImageView iv_progress;
     private Animation animation;
+
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 0){
+                flag = false;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +199,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         animation = AnimationUtils.loadAnimation(this, R.anim.progress);
         animation.setRepeatCount(Animation.INFINITE);
-        animation.setRepeatMode(Animation.RESTART);
+        animation.setRepeatMode(Animation.RESTART);animation.setInterpolator(new LinearInterpolator());
         iv_progress.setAnimation(animation);
         animation.startNow();
     }
@@ -237,5 +252,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         iv_progress.clearAnimation();
     }
 
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this,"再按一次返回键退出应用",Toast.LENGTH_SHORT).show();
+        if(flag){
+            this.finish();
+        }else{
+            flag = true;
+            handler.sendEmptyMessageDelayed(0,1500);
+        }
 
+    }
 }

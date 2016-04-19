@@ -75,8 +75,7 @@
             android:layout_marginRight="30dp"
             android:text="我的订单"
             android:background="@drawable/textview_frame"
-            android:paddingLeft="10dp"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textSize="20sp"/>
 
         <Button
@@ -87,9 +86,8 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:text="关于我们"
-            android:paddingLeft="10dp"
             android:background="@drawable/textview_frame"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textSize="20sp"/>
 
         <Button
@@ -100,9 +98,8 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:text="退出登录"
-            android:paddingLeft="10dp"
             android:background="@drawable/textview_frame"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textSize="20sp"/>
 
 

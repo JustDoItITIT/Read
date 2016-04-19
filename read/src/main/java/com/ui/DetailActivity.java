@@ -2,6 +2,7 @@ package com.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +29,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
+import com.example.administrator.read.ReadApplication;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import adapter.CatalogAdapter;
 import bean.BookDetail;
@@ -56,8 +63,8 @@ public class DetailActivity extends Activity {
     private LinearLayout ll_search, ll;
     private ScrollView sv;
 
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences preferences,sp_record;
+    private SharedPreferences.Editor editor,ed_record;
     private boolean favorFlag = false;
 
     private RelativeLayout rl_progress;
@@ -65,7 +72,14 @@ public class DetailActivity extends Activity {
     private ImageView iv_progress;
     private Animation animation;
 
+    private boolean buyed = false;
+    private List<String> list_id = new ArrayList<>();
+    private String result;
+    private List<String> results = new ArrayList<>();
+    private String name;
+
     private Button bt;
+    private CatalogAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +87,10 @@ public class DetailActivity extends Activity {
         setContentView(R.layout.content_detail);
         preferences=getSharedPreferences("shelf", Context.MODE_PRIVATE);
         editor=preferences.edit();
+
+        sp_record = getSharedPreferences("buy_record", Context.MODE_PRIVATE);
+        ed_record = sp_record.edit();
+
         mQueue = Volley.newRequestQueue(this);
         id = getIntent().getExtras().getInt("ID");
         path = path + id;
@@ -86,6 +104,7 @@ public class DetailActivity extends Activity {
         animation = AnimationUtils.loadAnimation(this, R.anim.progress);
         animation.setRepeatMode(Animation.RESTART);
         animation.setRepeatCount(Animation.INFINITE);
+        animation.setInterpolator(new LinearInterpolator());
         iv_progress.setAnimation(animation);
         animation.startNow();
     }
@@ -148,6 +167,35 @@ public class DetailActivity extends Activity {
             }
         });
 
+
+        /**
+         * 获取sp中的数据 遍历书本ID 查看购买记录
+         * 改变按钮
+         * */
+
+        Map<String,?> map = sp_record.getAll();
+        for (String key : map.keySet()) {
+            list_id.add(key);
+        }
+        name = id + "";
+        for (int i = 0 ; i < list_id.size() ; i ++ ){
+            if(name.equals(list_id.get(i))){
+                result = sp_record.getString(name,"null");
+                if("all".equals(result)){
+                    buyed = true;
+                    bt_buy.setText("已购买");
+                    bt_buy.setClickable(false);
+                }else{
+                    String[] a = result.split(",");
+                    for (int j = 0 ; j < a.length ; j ++)
+                    {
+                        results.add(a[j]);
+                    }
+                    results.remove(0);
+                    Log.i("result",result);
+                }
+            }
+        }
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +204,43 @@ public class DetailActivity extends Activity {
                 bundle.putInt("ID",id);
                 intent.putExtras(bundle);
                 startActivity(intent);
+            }
+        });
+
+        bt_buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * 购买全书 弹出对话框
+                 * 改变按钮text 不可点击
+                 * */
+                ConfirmDialog.Builder builder = new ConfirmDialog.Builder(DetailActivity.this);
+                builder.setMessage("确定要购买全本吗？");
+                builder.setTitle("提示");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        ed_record.putString(name, "all");
+                        ed_record.commit();
+                        buyed = true;
+                        result = "all";
+                        bt_buy.setText("已购买");
+                        bt_buy.setClickable(false);
+                        for (int i = 0; i < bd.getBooklist().size();i++){
+                            setFlag(i,adapter);
+                        }
+                    }
+                });
+
+                builder.setNegativeButton("取消",
+                        new android.content.DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.create().show();
+
             }
         });
 
@@ -173,22 +258,85 @@ public class DetailActivity extends Activity {
                         tv_auth.setText(bd.getAuthor());
                         tv_title.setText(bd.getTitle());
                         downloadImg();
-                        catalog.setAdapter(new CatalogAdapter(bd.getBooklist(), DetailActivity.this));
+                        adapter = new CatalogAdapter(bd.getBooklist(), DetailActivity.this);
+                        catalog.setAdapter(adapter);
+                        for(int i = 0 ; i < results.size();i ++){
+                            int a = Integer.parseInt(results.get(i));
+                            setFlag(a,adapter);
+                        }
+                        for (int i = 0 ; i < list_id.size() ; i ++ ){
+                            if(name.equals(list_id.get(i))){
+                                result = sp_record.getString(name,"null");
+                                if("all".equals(result)){
+                                    for (int j = 0 ; j < bd.getBooklist().size();j++){
+                                        bd.getBooklist().get(j).setFlag(true);
+                                    }
+                                }
+                            }
+                        }
                         SetListHeight.setListViewHeight(catalog);
                         sv.smoothScrollTo(0, 20);
                         rl_progress.setVisibility(View.GONE);
                         iv_progress.clearAnimation();
                         catalog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
-                                bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
-                                bundle.putInt("position", position);
-                                bundle.putInt("count", bd.getBooklist().size());
-                                intent.putExtras(bundle);
-                                startActivityForResult(intent, 2);
+                            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                                /**
+                                 * 第一章免费 后面收费
+                                 * */
+                                if (buyed) {
+                                    jump(position);
+                                } else if (position == 0) {
+                                    jump(position);
+                                } else {
+                                    boolean flag = false;
+                                    if (results.size() > 0) {
+                                        for (int i = 0; i < results.size(); i++) {
+                                            int p = Integer.parseInt(results.get(i));
+                                            if (p == position) {
+                                                jump(position);
+                                                flag = true;
+                                            }
+                                        }
+                                    }
+                                    if (!flag) {
+                                        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(DetailActivity.this);
+                                        builder.setMessage("确定购买本章节内容吗？");
+                                        builder.setTitle("提示");
+                                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                StringBuilder sb = new StringBuilder();
+                                                sb.append(result);
+                                                sb.append("," + position);
+
+                                                String b[] = sb.toString().split(",");
+                                                results.clear();
+                                                for (int j = 0; j < b.length; j++) {
+                                                    results.add(b[j]);
+                                                }
+                                                results.remove(0);
+                                                for(int i = 0 ; i < results.size();i ++){
+                                                    int a = Integer.parseInt(results.get(i));
+                                                    setFlag(a,adapter);
+                                                }
+                                                Log.i("fuck", results.toString());
+                                                ed_record.putString(name, sb.toString());
+                                                ed_record.commit();
+                                                jump(position);
+                                            }
+                                        });
+
+                                        builder.setNegativeButton("取消",
+                                                new android.content.DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+
+                                        builder.create().show();
+                                    }
+                                }
                             }
                         });
                     }
@@ -209,21 +357,20 @@ public class DetailActivity extends Activity {
         imageLoader.get(bd.getCover(), listener);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(data != null){
-            int position = data.getExtras().getInt("position");
-            if(requestCode == 2 && resultCode == 1){
-                Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
-                bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
-                bundle.putInt("position", position);
-                intent.putExtras(bundle);
-                startActivityForResult(intent, 2);
-            }
-        }
 
+    public void jump(int position){
+        Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
+        bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
+        bundle.putInt("position", position);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 2);
+    }
+
+    public void setFlag(int position,CatalogAdapter adapter){
+        bd.getBooklist().get(position).setFlag(true);
+        adapter.notifyDataSetChanged();
     }
 
 }

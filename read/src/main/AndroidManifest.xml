@@ -25,7 +25,9 @@
         <activity android:name="com.ui.LoginActivity" />
         <activity android:name="com.ui.RegistActivity" />
         <activity android:name="adbanner.BaseWebActivity" />
-        <activity android:name="com.ui.SplashActivity">
+        <activity
+            android:theme="@style/AppSplash"
+            android:name="com.ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +36,8 @@
         </activity>
         <activity android:name="com.ui.MoreActivity" />
         <activity android:name="com.ui.ReadActivity" />
-        <activity android:name="com.ui.AboutActivity"></activity>
+        <activity android:name="com.ui.AboutActivity" />
+        <activity android:name="com.ui.OrderedActivity"></activity>
     </application>
 
 </manifest>
