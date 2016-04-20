@@ -10,14 +10,21 @@
         android:orientation="horizontal">
 
 
-        <ImageView
+        <RelativeLayout
             android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/back"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"/>
+            android:gravity="center">
+
+            <ImageView
+
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/back"
+                android:scaleType="fitCenter"
+                />
+        </RelativeLayout>
 
 
         <TextView
@@ -29,12 +36,20 @@
             android:textColor="#000"
             android:textSize="20sp" />
 
-        <ImageView
+
+        <RelativeLayout
             android:id="@+id/iv_search"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:src="@drawable/search" />
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/search" />
+        </RelativeLayout>
+
     </RelativeLayout>
 
     <View
@@ -50,16 +65,22 @@
         android:layout_height="match_parent"
         android:background="#fff"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+       >
 
-        <ImageView
+
+        <RelativeLayout
             android:id="@+id/search_back"
-            android:layout_width="0dp"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:src="@drawable/back" />
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/back" />
+        </RelativeLayout>
+
 
         <bean.CleanableEditText
             android:id="@+id/search_edittext"
@@ -71,15 +92,21 @@
             android:hint="输入书名进行搜索"
             android:textColorHint="#ccc"
             android:background="@drawable/edittext_background"
-            android:drawableRight="@drawable/search_clear_pressed" />
+            android:drawableRight="@drawable/search_clear_pressed"
+            android:imeOptions="actionSearch"/>
+
+
+        <RelativeLayout
+            android:id="@+id/search_search"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
 
         <ImageView
-            android:id="@+id/search_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/search" />
-
+        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>

@@ -1,10 +1,11 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -22,7 +23,7 @@ import bean.CleanableEditText;
 public class RegistActivity extends Activity {
 
     private Button bt_reginst;
-    private ImageView iv_back;
+    private RelativeLayout iv_back;
     private CleanableEditText et_username,et_phone,et_password;
 
     private RequestQueue mQueue;
@@ -40,20 +41,23 @@ public class RegistActivity extends Activity {
 
     private void initView(){
         bt_reginst = (Button) findViewById(R.id.regist_button);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
         et_username = (CleanableEditText) findViewById(R.id.regist_username);
         et_password = (CleanableEditText) findViewById(R.id.regist_password);
         et_phone = (CleanableEditText) findViewById(R.id.regist_phone);
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                RegistActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    RegistActivity.this.finish();
+                }
+                return true;
             }
         });
         bt_reginst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                path = String.format(path,et_username.getText().toString(),et_password.getText().toString(),et_phone.getText().toString());
+                path = String.format(path, et_username.getText().toString(), et_password.getText().toString(), et_phone.getText().toString());
                 StringRequest stringRequest = new StringRequest(path,
                         new Response.Listener<String>() {
                             @Override

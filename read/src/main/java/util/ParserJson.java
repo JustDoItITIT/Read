@@ -5,6 +5,7 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +76,18 @@ public class ParserJson {
 
     }
 
-    public static List<GVItem> parserGVJson(String Json){
+    public static List<GVItem> parserGVJson(String Json) {
         try {
             List<GVItem> list = new ArrayList<>();
             JSONObject jo = new JSONObject(Json);
             JSONArray ja = jo.getJSONArray("novelTheme");
-            for(int i = 0 ; i < ja.length() ;i ++){
+            for (int i = 0; i < ja.length(); i++) {
                 GVItem gv = new GVItem();
                 gv.setId(ja.getJSONObject(i).getInt("id"));
                 gv.setName(ja.getJSONObject(i).getString("name"));
                 list.add(gv);
-            }return list;
+            }
+            return list;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,12 +120,12 @@ public class ParserJson {
         return null;
     }
 
-    public static List<OrderMessage> parserOrderedJson(String Json){
-        List< OrderMessage> list = new ArrayList<>();
+    public static List<OrderMessage> parserOrderedJson(String Json) {
+        List<OrderMessage> list = new ArrayList<>();
         try {
             JSONObject jo = new JSONObject(Json);
             JSONArray ja = jo.getJSONArray("orderList");
-            for (int i = 0; i<ja.length() ; i ++){
+            for (int i = 0; i < ja.length(); i++) {
                 OrderMessage om = new OrderMessage();
                 JSONObject jo1 = ja.getJSONObject(i);
                 om.setGoodPrice(jo1.getString("goodPrice"));
@@ -136,6 +138,29 @@ public class ParserJson {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-            return null;
+        return null;
+    }
+
+    public static List<Books> parserMoreJson(String json) {
+        List<Books> list = new ArrayList<>();
+        try {
+            JSONObject jo = new JSONObject(json);
+            JSONArray ja = jo.getJSONObject("novelPage").getJSONArray("result");
+            for (int i = 0; i < ja.length(); i++) {
+                Books books = new Books();
+                JSONObject item = ja.getJSONObject(i);
+                books.setAuthor(item.getString("author"));
+                books.setChapterCount(item.getInt("chapterCount"));
+                books.setCover(item.getString("cover"));
+                books.setId(item.getInt("id"));
+                books.setTitle(item.getString("title"));
+                list.add(books);
+            }
+            return list;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

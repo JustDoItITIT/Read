@@ -1,12 +1,13 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,14 +23,15 @@ import org.json.JSONObject;
 
 public class ReadActivity extends Activity {
 
-    private ImageView iv_back;
+    private RelativeLayout iv_back;
     private String title;
     private int id;
     private TextView tv_title, mBookContent;
     private RequestQueue mQueue;
     private String path = "http://api.manyanger.com:8101/novel/novelRead.htm?chapterId=";
-
+    private Button bt_next;
     private int position,count;
+    private boolean isDA = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,24 +42,47 @@ public class ReadActivity extends Activity {
         id = getIntent().getExtras().getInt("ID");
         position = getIntent().getExtras().getInt("position");
         count = getIntent().getExtras().getInt("count");
+        isDA = getIntent().getExtras().getBoolean("detailactivity",false);
         path = path + id;
         init();
         getData();
     }
 
     private void init(){
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
         tv_title = (TextView) findViewById(R.id.chTitle);
         mBookContent = (TextView) findViewById(R.id.book_content);
-
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        bt_next = (Button)findViewById(R.id.next);
+        if(isDA){
+            bt_next.setVisibility(View.GONE);
+        }
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                ReadActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    ReadActivity.this.finish();
+                }
+                return true;
             }
         });
         tv_title.setText(title);
         tv_title.setTextSize(25);
+
+        bt_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position == count - 1){
+                    Toast.makeText(ReadActivity.this, "已是最后一章", Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("position", position + 1);
+                    intent.putExtras(bundle);
+                    setResult(1, intent);
+                    ReadActivity.this.finish();
+                }
+            }
+        });
 
     }
 
@@ -83,4 +108,6 @@ public class ReadActivity extends Activity {
 
 
     }
+
+
 }

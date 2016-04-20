@@ -58,7 +58,7 @@ public class CatalogAdapter extends BaseAdapter {
         }
         vh.tv_title.setText(list.get(position).getTitle_cha());
 
-        if(position == 0){
+        if(position <= 2){
             vh.tv_flag.setVisibility(View.VISIBLE);
             vh.tv_flag.setText("免费阅读");
         }else if(list.get(position).isFlag()){

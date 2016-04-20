@@ -6,38 +6,40 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".ReadApplication"
+        android:name="ui.ReadApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="ui.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity
-            android:name="com.ui.DetailActivity"
+            android:name="ui.DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.ui.ClassifyActivity" />
-        <activity android:name="com.ui.SearchActivity" />
-        <activity android:name="com.ui.LoginActivity" />
-        <activity android:name="com.ui.RegistActivity" />
+        <activity android:name="ui.ClassifyActivity" />
+        <activity android:name="ui.SearchActivity" />
+        <activity android:name="ui.LoginActivity" />
+        <activity android:name="ui.RegistActivity" />
         <activity android:name="adbanner.BaseWebActivity" />
         <activity
-            android:theme="@style/AppSplash"
-            android:name="com.ui.SplashActivity">
+            android:name="ui.SplashActivity"
+            android:theme="@style/AppSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.ui.MoreActivity" />
-        <activity android:name="com.ui.ReadActivity" />
-        <activity android:name="com.ui.AboutActivity" />
-        <activity android:name="com.ui.OrderedActivity"></activity>
+        <activity android:name="ui.MoreActivity" />
+        <activity android:name="ui.ReadActivity" />
+        <activity android:name="ui.AboutActivity" />
+        <activity android:name="ui.OrderedActivity" />
+        <activity android:name="ui.MainMoreActivity"></activity>
     </application>
 
 </manifest>

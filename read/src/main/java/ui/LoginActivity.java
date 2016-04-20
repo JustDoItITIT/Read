@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -17,7 +18,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
-import com.example.administrator.read.ReadApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class LoginActivity extends Activity {
     private String path = "http://api.manyanger.com:8101/manyanger/login.htm?username=%s&password=%s";
     private RequestQueue mQueue;
 
-    private ImageView iv_back;
+    private RelativeLayout iv_back;
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -110,13 +110,15 @@ public class LoginActivity extends Activity {
             }
         });
 
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                LoginActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    LoginActivity.this.finish();
+                }
+                return true;
             }
         });
-
     }
 }

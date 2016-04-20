@@ -56,8 +56,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/button_transparent"
-                        android:text="更多..."
-                        android:visibility="gone" />
+                        android:text="更多..." />
 
 
                 </LinearLayout>
@@ -104,8 +103,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/button_transparent"
-                        android:text="更多..."
-                        android:visibility="gone" />
+                        android:text="更多..." />
 
 
                 </LinearLayout>
@@ -152,8 +150,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/button_transparent"
-                        android:text="更多..."
-                        android:visibility="gone" />
+                        android:text="更多..." />
 
 
                 </LinearLayout>

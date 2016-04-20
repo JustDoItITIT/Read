@@ -8,6 +8,19 @@ public class Books {
     private String author,cover,title;
     private int id,chapterCount;
 
+
+    public int getTotalMoney(){
+        int a = chapterCount / 10;
+        a++;
+        if(a <= 10){
+            return a;
+        }else if (a > 10 && a <= 20){
+            return 15;
+        }else if(a > 20)
+            return 20;
+        return 0;
+    }
+
     public String getAuthor() {
         return author;
     }

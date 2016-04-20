@@ -239,6 +239,12 @@
                     android:layout_marginRight="15dp"
                     android:scrollbars="none"></ListView>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#ccc"
+                    ></View>
+
                 <Button
                     android:id="@+id/footer"
                     android:layout_width="match_parent"

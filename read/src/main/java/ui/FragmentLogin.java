@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.administrator.read.R;
-import com.example.administrator.read.ReadApplication;
 
 import bean.LoginMessage;
 import de.greenrobot.event.EventBus;

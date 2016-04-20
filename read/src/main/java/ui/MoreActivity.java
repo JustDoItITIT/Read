@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,10 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -19,7 +20,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
-import com.example.administrator.read.ReadApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,11 +34,11 @@ import bean.BookDetailList;
 
 public class MoreActivity extends Activity {
 
-    private ImageView iv_back;
+    private RelativeLayout iv_back;
     private ListView lv_more;
     private List<BookDetailList> list;
 
-    private String path = "http://api.manyanger.com:8101/novel/chapterList.htm?id=";
+    private String path = "http://api.manyanger.com:8101/novel/chapterList.htm?id=%d&pageNo=%d";
     private int id;
     private RequestQueue mQueue;
     private List<String> results = new ArrayList<>();
@@ -48,6 +48,11 @@ public class MoreActivity extends Activity {
     private List<String> list_id = new ArrayList<>();
     private String result;
     private String name;
+
+    private int currentPage = 0;
+    private CatalogAdapter adapter;
+    private  boolean flag = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +67,18 @@ public class MoreActivity extends Activity {
     }
 
     private void init(){
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
         lv_more = (ListView) findViewById(R.id.more_listview);
         list = new ArrayList<>();
-        path = path + id;
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        adapter = new CatalogAdapter(list, MoreActivity.this);
+        lv_more.setAdapter(adapter);
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                MoreActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    MoreActivity.this.finish();
+                }
+                return true;
             }
         });
         /**
@@ -99,13 +108,15 @@ public class MoreActivity extends Activity {
         }}
 
     private void downloadData(){
-        StringRequest stringRequest = new StringRequest(path,
+        String p = String.format(path,id,currentPage);
+        StringRequest stringRequest = new StringRequest(p,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
                         try {
                             JSONObject jo = new JSONObject(response);
                             JSONArray ja = jo.getJSONObject("chapterList").getJSONArray("result");
+                            flag =  jo.getJSONObject("chapterList").getBoolean("next");
                             for (int i = 0;i < ja.length() ;i++){
                                 BookDetailList bdl = new BookDetailList();
                                 bdl.setTitle_cha(ja.getJSONObject(i).getString("title"));
@@ -115,82 +126,31 @@ public class MoreActivity extends Activity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        final CatalogAdapter adapter = new CatalogAdapter(list, MoreActivity.this);
-                        lv_more.setAdapter(adapter);
-                        for(int i = 0 ; i < results.size();i ++){
-                            int a = Integer.parseInt(results.get(i));
-                            setFlag(a,adapter);
-                        }
-                        for (int i = 0 ; i < list_id.size() ; i ++ ){
-                            if(name.equals(list_id.get(i))){
-                                result = sp_record.getString(name,"null");
-                                if("all".equals(result)){
-                                    for (int j = 0 ; j < list.size();j++){
-                                        list.get(j).setFlag(true);
+                        currentPage ++;
+                        if(flag){
+                            downloadData();
+                        }else{
+                            for(int i = 0 ; i < results.size();i ++){
+                                int a = Integer.parseInt(results.get(i));
+                                setFlag(a,adapter);
+                            }
+                            for (int i = 0 ; i < list_id.size() ; i ++ ){
+                                if(name.equals(list_id.get(i))){
+                                    result = sp_record.getString(name,"null");
+                                    if("all".equals(result)){
+                                        for (int j = 0 ; j < list.size();j++){
+                                            list.get(j).setFlag(true);
+                                        }
                                     }
                                 }
                             }
                         }
+                        adapter.notifyDataSetChanged();
+
                         lv_more.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                                /**
-                                 * 第一章免费 后面收费
-                                 * */
-                                if(buyed){
-                                    jump(position);
-                                }
-                                else if(position == 0){
-                                    jump(position);
-                                }
-                                else{
-                                    boolean flag = false;
-                                    if(results.size() > 0){
-                                        for (int i = 0 ; i < results.size() ; i ++){
-                                            int p = Integer.parseInt(results.get(i));
-                                            if(p == position){
-                                                jump(position);
-                                                flag = true;
-                                            }
-                                        }
-                                    }
-                                    if(!flag){
-                                        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(MoreActivity.this);
-                                        builder.setMessage("确定购买本章节内容吗？");
-                                        builder.setTitle("提示");
-                                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                StringBuilder sb = new StringBuilder();
-                                                sb.append(result);
-                                                sb.append("," + position);
-
-                                                String b[] = sb.toString().split(",");
-                                                results.clear();
-                                                for (int j = 0; j < b.length; j++) {
-                                                    results.add(b[j]);
-                                                }
-                                                results.remove(0);
-                                                for(int i = 0 ; i < results.size();i ++){
-                                                    int a = Integer.parseInt(results.get(i));
-                                                    setFlag(a,adapter);
-                                                }
-                                                Log.i("fuck",results.toString());
-                                                ed_record.putString(name, sb.toString());
-                                                ed_record.commit();
-                                                jump(position);
-                                            }
-                                        });
-
-                                        builder.setNegativeButton("取消",
-                                                new android.content.DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-
-                                        builder.create().show();
-                                    }}
+                                couldJump(position);
                             }
                         });
                     }
@@ -207,7 +167,68 @@ public class MoreActivity extends Activity {
 
     }
 
+    public void couldJump(final int position){
+        {
+            /**
+             * 第一章免费 后面收费
+             * */
+            if(buyed){
+                jump(position);
+            }
+            else if(position <= 2){
+                jump(position);
+            }
+            else{
+                boolean flag = false;
+                if(results.size() > 0){
+                    for (int i = 0 ; i < results.size() ; i ++){
+                        int p = Integer.parseInt(results.get(i));
+                        if(p == position){
+                            jump(position);
+                            flag = true;
+                        }
+                    }
+                }
+                if(!flag){
+                    ConfirmDialog.Builder builder = new ConfirmDialog.Builder(MoreActivity.this);
+                    builder.setMessage("确定购买本章节内容吗？");
+                    builder.setTitle("提示");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(result);
+                            sb.append("," + position);
 
+                            String b[] = sb.toString().split(",");
+                            results.clear();
+                            for (int j = 0; j < b.length; j++) {
+                                results.add(b[j]);
+                            }
+                            results.remove(0);
+                            for(int i = 0 ; i < results.size();i ++){
+                                int a = Integer.parseInt(results.get(i));
+                                setFlag(a,adapter);
+                            }
+                            Log.i("fuck",results.toString());
+                            ed_record.putString(name, sb.toString());
+                            ed_record.commit();
+                            jump(position);
+                        }
+                    });
+
+                    builder.setNegativeButton("取消",
+                            new android.content.DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                    builder.create().show();
+                }}
+
+        }
+    }
 
     public void jump(int position){
         Intent intent = new Intent(MoreActivity.this, ReadActivity.class);
@@ -225,5 +246,11 @@ public class MoreActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 2 && resultCode == 1 && data != null){
+            int position = data.getExtras().getInt("position");
+            couldJump(position);
+        }
+    }
 }

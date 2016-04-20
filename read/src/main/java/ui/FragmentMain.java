@@ -1,12 +1,10 @@
-package com.ui;
+package ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -81,6 +79,7 @@ public class FragmentMain extends Fragment implements View.OnClickListener {
         lv_recommend = (ListView) view.findViewById(R.id.listview_recommend);
         lv_competitive = (ListView) view.findViewById(R.id.listview_competitive);
         lv_update = (ListView) view.findViewById(R.id.listview_update);
+
         bt_recommend = (Button) view.findViewById(R.id.bt_recommend);
         bt_competitive = (Button) view.findViewById(R.id.bt_competitive);
         bt_update = (Button) view.findViewById(R.id.bt_update);
@@ -115,18 +114,27 @@ public class FragmentMain extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(getActivity(),MainMoreActivity.class);
+        Bundle bundle = new Bundle();
+
         switch (v.getId()) {
             case R.id.bt_recommend:
-
+        bundle.putInt("type",3);
+                bundle.putString("title","推荐");
                 break;
             case R.id.bt_competitive:
+                bundle.putInt("type",2);
+                bundle.putString("title","精品");
                 break;
             case R.id.bt_update:
+                bundle.putInt("type",0);
+                bundle.putString("title","最近更新");
                 break;
             default:
                 break;
-
         }
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void downloadJson() {

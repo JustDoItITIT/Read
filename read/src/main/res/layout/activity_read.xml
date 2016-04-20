@@ -12,14 +12,21 @@
         android:orientation="horizontal">
 
 
-        <ImageView
+        <RelativeLayout
             android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:src="@drawable/back" />
+            android:gravity="center">
+
+            <ImageView
+
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/back"
+                android:scaleType="fitCenter"
+                />
+        </RelativeLayout>
 
 
         <TextView
@@ -43,6 +50,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:scrollbars="none" >
 
         <LinearLayout
@@ -56,6 +64,16 @@
                 android:layout_height="match_parent"
                 android:textColor="#433f3c"
                 android:padding="13.3dp" />
+
+            <Button
+                android:id="@+id/next"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="下一章"
+                android:gravity="center"
+                android:background="@android:color/transparent"/>
 
         </LinearLayout>
         

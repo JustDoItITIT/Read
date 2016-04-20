@@ -1,7 +1,8 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -34,7 +35,8 @@ public class OrderedActivity extends Activity {
     private int userID;
     private PullToRefreshListView plv;
     private RelativeLayout rl_progress,rl_layout;
-    private ImageView iv_progress,iv_back;
+    private ImageView iv_progress;
+    private RelativeLayout iv_back;
     private TextView tv_no_order;
     private Animation animation;
     private List<OrderMessage> list = new ArrayList<>();
@@ -57,11 +59,14 @@ public class OrderedActivity extends Activity {
         iv_progress = (ImageView) findViewById(R.id.iv_progress);
         tv_no_order = (TextView) findViewById(R.id.tv_no_order);
         rl_layout = (RelativeLayout) findViewById(R.id.layout);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                OrderedActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    OrderedActivity.this.finish();
+                }
+                return true;
             }
         });
         animation = AnimationUtils.loadAnimation(this,R.anim.progress);

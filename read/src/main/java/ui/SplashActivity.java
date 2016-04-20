@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.os.Message;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.administrator.read.MainActivity;
 import com.example.administrator.read.R;
 
 public class SplashActivity extends Activity {

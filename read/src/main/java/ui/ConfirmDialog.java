@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Dialog;
 import android.content.Context;

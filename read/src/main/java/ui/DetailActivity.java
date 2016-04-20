@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,13 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -29,7 +29,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.administrator.read.R;
-import com.example.administrator.read.ReadApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +51,14 @@ public class DetailActivity extends Activity {
     private Button bt_favor, bt_buy;
 
     private String path = "http://api.manyanger.com:8101/novel/novelDetail.htm?id=";
+
+
     private int id;
     private RequestQueue mQueue;
 
     private BookDetail bd;
 
-    private ImageView iv_back, iv_search, search_search, search_back;
+    private RelativeLayout iv_back, iv_search, search_search, search_back;
     private TextView title;
     private CleanableEditText edittext;
     private LinearLayout ll_search, ll;
@@ -130,16 +131,19 @@ public class DetailActivity extends Activity {
 
         title = (TextView) findViewById(R.id.title);
         title.setText("图书详情");
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_search = (ImageView) findViewById(R.id.iv_search);
-        iv_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DetailActivity.this.finish();
-            }
-        });
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
+        iv_search = (RelativeLayout) findViewById(R.id.iv_search);
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
+                                       @Override
+                                       public boolean onTouch(View v, MotionEvent event) {
+                                           if (event.getAction() == MotionEvent.ACTION_UP) {
+                                           }
+                                           DetailActivity.this.finish();
+                                           return true;
+                                       }
+                                   });
 
-        iv_search.setVisibility(View.INVISIBLE);
+        iv_search.setVisibility(View.GONE);
 
         int pre = Integer.parseInt(preferences.getString("" + id , "-1" ));
         if(pre == id){
@@ -184,7 +188,7 @@ public class DetailActivity extends Activity {
                 if("all".equals(result)){
                     buyed = true;
                     bt_buy.setText("已购买");
-                    bt_buy.setClickable(false);
+                    bt_buy.setEnabled(false);
                 }else{
                     String[] a = result.split(",");
                     for (int j = 0 ; j < a.length ; j ++)
@@ -225,7 +229,7 @@ public class DetailActivity extends Activity {
                         buyed = true;
                         result = "all";
                         bt_buy.setText("已购买");
-                        bt_buy.setClickable(false);
+                        bt_buy.setEnabled(false);
                         for (int i = 0; i < bd.getBooklist().size();i++){
                             setFlag(i,adapter);
                         }
@@ -257,11 +261,13 @@ public class DetailActivity extends Activity {
                         tv_depict.setText(bd.getDepict());
                         tv_auth.setText(bd.getAuthor());
                         tv_title.setText(bd.getTitle());
+                        tv_price.setText("全本" + bd.getTotalMoney() + "元，前3章免费阅读" );
                         downloadImg();
                         adapter = new CatalogAdapter(bd.getBooklist(), DetailActivity.this);
                         catalog.setAdapter(adapter);
                         for(int i = 0 ; i < results.size();i ++){
                             int a = Integer.parseInt(results.get(i));
+                            if(a < 6)
                             setFlag(a,adapter);
                         }
                         for (int i = 0 ; i < list_id.size() ; i ++ ){
@@ -286,7 +292,7 @@ public class DetailActivity extends Activity {
                                  * */
                                 if (buyed) {
                                     jump(position);
-                                } else if (position == 0) {
+                                } else if (position <= 2) {
                                     jump(position);
                                 } else {
                                     boolean flag = false;
@@ -364,6 +370,7 @@ public class DetailActivity extends Activity {
         bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
         bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
         bundle.putInt("position", position);
+        bundle.putBoolean("detailactivity",true);
         intent.putExtras(bundle);
         startActivityForResult(intent, 2);
     }

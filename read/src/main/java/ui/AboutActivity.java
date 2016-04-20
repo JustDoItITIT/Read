@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,14 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.administrator.read.R;
@@ -25,7 +26,7 @@ public class AboutActivity extends Activity {
     private GridView mGridView;
     private MAdapter mAdapter;
     List<GridData> mList = new ArrayList<GridData>();
-    private ImageView iv;
+    private RelativeLayout iv;
 
 
     @Override
@@ -59,11 +60,14 @@ public class AboutActivity extends Activity {
                 AboutActivity.this.startActivity(intent);
             }
         });
-        iv = (ImageView) findViewById(R.id.iv_back);
-        iv.setOnClickListener(new View.OnClickListener() {
+        iv = (RelativeLayout) findViewById(R.id.iv_back);
+        iv.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                AboutActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    AboutActivity.this.finish();
+                }
+                return true;
             }
         });
     }

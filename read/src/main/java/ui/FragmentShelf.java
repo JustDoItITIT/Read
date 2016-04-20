@@ -1,4 +1,4 @@
-package com.ui;
+package ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,20 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -37,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import adapter.ShelfGridViewAdapter;
-import bean.CleanableEditText;
 import bean.MyEvent;
 import bean.ShelfBook;
 import de.greenrobot.event.EventBus;

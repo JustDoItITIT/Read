@@ -1,13 +1,13 @@
-package com.ui;
+package ui;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +30,7 @@ import util.ParserJson;
 public class ClassifyActivity extends Activity {
 
     private TextView tv_title;
-    private ImageView iv_search, iv_back;
+    private RelativeLayout iv_search, iv_back;
     private PullToRefreshListView listview;
 
     private String path = "http://api.manyanger.com:8101/novel/novelList.htm?pageNo=%d&theme=";
@@ -68,17 +68,21 @@ public class ClassifyActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
-                bundle.putInt("ID", list.get(position).getId());
+                bundle.putInt("ID", list.get(position - 1 ).getId());
                 intent.putExtras(bundle);
                 intent.setClass(ClassifyActivity.this, DetailActivity.class);
                 ClassifyActivity.this.startActivity(intent);
             }
         });
 
-        iv_back.setOnClickListener(new View.OnClickListener() {
+        iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                ClassifyActivity.this.finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    ClassifyActivity.this.finish();
+                }
+
+                return true;
             }
         });
 
@@ -86,8 +90,8 @@ public class ClassifyActivity extends Activity {
 
     public void initView() {
         tv_title = (TextView) findViewById(R.id.title);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_search = (ImageView) findViewById(R.id.iv_search);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
+        iv_search = (RelativeLayout) findViewById(R.id.iv_search);
         listview = (PullToRefreshListView) findViewById(R.id.listiew);
         list = new ArrayList<>();
         iv_search.setVisibility(View.GONE);

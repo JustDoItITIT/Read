@@ -1,6 +1,7 @@
-package com.example.administrator.read;
+package ui;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,24 +9,22 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.administrator.read.R;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.ui.FragmentClassify;
-import com.ui.FragmentLogin;
-import com.ui.FragmentMain;
-import com.ui.FragmentShelf;
-import com.ui.SearchActivity;
 
 import bean.CleanableEditText;
 import bean.ProgressEvent;
@@ -37,13 +36,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ViewPager vp;
     private List<Fragment> list;
 
-    private ImageView iv_back, iv_search, search_search, search_back;
+    private RelativeLayout iv_back, iv_search, search_search, search_back;
     private TextView title;
     private CleanableEditText edittext;
     private LinearLayout ll_search;
     private RelativeLayout rl_layout;
 
     private boolean flag = false;
+    private RelativeLayout rl;
+
+    private boolean et_flag = false;
 
     /**
      * 加载
@@ -85,65 +87,82 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         rl_progress = (RelativeLayout) findViewById(R.id.rl_progress);
         iv_progress = (ImageView) findViewById(R.id.iv_progress);
 
-
+        rl = (RelativeLayout) findViewById(R.id.rl);
         title = (TextView) findViewById(R.id.title);
         title.setText("首页");
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
-        iv_search = (ImageView) findViewById(R.id.iv_search);
+        iv_search = (RelativeLayout) findViewById(R.id.iv_search);
         iv_back.setVisibility(View.GONE);
 
-        search_back = (ImageView) findViewById(R.id.search_back);
+        search_back = (RelativeLayout) findViewById(R.id.search_back);
         edittext = (CleanableEditText) findViewById(R.id.search_edittext);
-        search_search = (ImageView) findViewById(R.id.search_search);
+        search_search = (RelativeLayout) findViewById(R.id.search_search);
         ll_search = (LinearLayout) findViewById(R.id.search_layout);
         rl_layout = (RelativeLayout) findViewById(R.id.layout);
-        iv_search.setOnClickListener(new View.OnClickListener() {
+        iv_search.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.animation_search);
-                rl_layout.setVisibility(View.GONE);
-                ll_search.setVisibility(View.VISIBLE);
-                ll_search.setAnimation(animation);
-                animation.startNow();
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    et_flag = true;
+                    Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.animation_search);
+                    rl_layout.setVisibility(View.GONE);
+                    ll_search.setVisibility(View.VISIBLE);
+                    ll_search.setAnimation(animation);
+                    animation.startNow();
+                }
+                return true;
+            }
+    });
+
+        search_back.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    et_flag = false;
+                    rl_layout.setVisibility(View.VISIBLE);
+                    Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.animation_search_out);
+                    ll_search.setAnimation(animation);
+                    animation.startNow();
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            ll_search.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
+
+
+                }
+                return true;
             }
         });
 
-        search_back.setOnClickListener(new View.OnClickListener() {
+        search_search.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                rl_layout.setVisibility(View.VISIBLE);
-                Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.animation_search_out);
-                ll_search.setAnimation(animation);
-                animation.startNow();
-                animation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    {
+                        Intent intent = new Intent();
+                        intent.setClass(MainActivity.this, SearchActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("search", edittext.getText().toString());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                     }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        ll_search.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-            }
-        });
-        search_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, SearchActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("search", edittext.getText().toString());
-                intent.putExtras(bundle);
-                startActivity(intent);
+                }
+                return true;
             }
         });
         ll_main = (ImageView) findViewById(R.id.item_main);
@@ -161,6 +180,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         ll_classify.setOnClickListener(this);
         ll_more.setOnClickListener(this);
         vp.setAdapter(new adapter.PagerAdapter(getSupportFragmentManager(), list));
+        vp.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(et_flag)
+                search_back.performClick();
+                return false;
+            }
+        });
         vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -263,4 +290,5 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
 
     }
+
 }

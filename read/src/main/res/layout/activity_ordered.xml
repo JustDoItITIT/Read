@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ui.OrderedActivity">
+    tools:context="ui.OrderedActivity">
 
 
 
@@ -15,14 +15,21 @@
         >
 
 
-        <ImageView
+        <RelativeLayout
             android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/back"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"/>
+            android:gravity="center">
+
+            <ImageView
+
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/back"
+                android:scaleType="fitCenter"
+                />
+        </RelativeLayout>
 
 
         <TextView

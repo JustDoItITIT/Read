@@ -28,13 +28,11 @@ public class MainBookListAdapter extends BaseAdapter {
     private Context context;
     private List<Books> list;
     private RequestQueue mQueue;
-    private ImageLoader imageLoader;
 
     public MainBookListAdapter(Context context, List<Books> list) {
         this.context = context;
         this.list = list;
         mQueue = Volley.newRequestQueue(context);
-        imageLoader = new ImageLoader(mQueue, BitmapCache.instance());
     }
 
 
@@ -63,11 +61,13 @@ public class MainBookListAdapter extends BaseAdapter {
             vh.tv_author = (TextView) convertView.findViewById(R.id.item_author);
             vh.tv_title = (TextView) convertView.findViewById(R.id.title);
             vh.tv_chapter = (TextView) convertView.findViewById(R.id.item_chapter);
+            vh.tv_cost = (TextView) convertView.findViewById(R.id.item_cost);
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
         }
         vh.tv_author.setText(list.get(position).getAuthor());
+        vh.tv_cost.setText( "全本" + list.get(position).getTotalMoney() + "元");
         vh.tv_title.setText(list.get(position).getTitle());
         vh.tv_chapter.setText("更新至" + list.get(position).getChapterCount() + "章");
         ImageLoader imageLoader = new ImageLoader(mQueue,BitmapCache.instance());
@@ -82,5 +82,5 @@ public class MainBookListAdapter extends BaseAdapter {
 
 class ViewHolder {
     NetworkImageView iv;
-    TextView tv_title, tv_author, tv_chapter;
+    TextView tv_title, tv_author, tv_chapter,tv_cost;
 }

@@ -10,6 +10,22 @@ public class BookDetail {
     private List<BookDetailList> booklist;
     private String cover, title, theme, depict, process, author;
     private int id, words,chapterCount;
+    private int totalMoney;
+
+
+    public int getTotalMoney(){
+
+        int a = chapterCount / 10 ;
+        a ++ ;
+        if(a <= 10){
+            totalMoney = a;
+        }else if(10 < a && a <= 20){
+            totalMoney = 15;
+        }else if (a > 20){
+            totalMoney = 20;
+        }
+        return totalMoney;
+    }
 
     public int getChapterCount() {
         return chapterCount;
@@ -90,4 +106,7 @@ public class BookDetail {
     public void setWords(int words) {
         this.words = words;
     }
+
+
+
 }
