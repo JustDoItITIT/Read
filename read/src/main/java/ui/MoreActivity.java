@@ -52,6 +52,7 @@ public class MoreActivity extends Activity {
     private int currentPage = 0;
     private CatalogAdapter adapter;
     private  boolean flag = true;
+    private int performClick = 6;
 
 
     @Override
@@ -59,11 +60,20 @@ public class MoreActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more);
         id = getIntent().getExtras().getInt("ID");
+        performClick = getIntent().getExtras().getInt("performClick",6);
         sp_record = getSharedPreferences("buy_record", Context.MODE_PRIVATE);
         ed_record = sp_record.edit();
         mQueue = Volley.newRequestQueue(this);
         init();
         downloadData();
+    }
+
+    private void performClick(){
+        if(performClick == 6){
+
+        }else if(performClick >= 0 && performClick < 6){
+            jump(performClick);
+        }
     }
 
     private void init(){
@@ -72,6 +82,7 @@ public class MoreActivity extends Activity {
         list = new ArrayList<>();
         adapter = new CatalogAdapter(list, MoreActivity.this);
         lv_more.setAdapter(adapter);
+
         iv_back.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -123,6 +134,7 @@ public class MoreActivity extends Activity {
                                 bdl.setId_cha(ja.getJSONObject(i).getInt("id"));
                             list.add(bdl);
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -144,6 +156,9 @@ public class MoreActivity extends Activity {
                                     }
                                 }
                             }
+                            Log.i("size",list.size() + "");
+                            Log.i("position",performClick + "");
+                            performClick();
                         }
                         adapter.notifyDataSetChanged();
 
@@ -151,6 +166,7 @@ public class MoreActivity extends Activity {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                 couldJump(position);
+
                             }
                         });
                     }
@@ -237,6 +253,7 @@ public class MoreActivity extends Activity {
         bundle.putInt("ID", list.get(position).getId_cha());
         bundle.putInt("position", position);
         bundle.putInt("count", list.size());
+        bundle.putInt("catlogId",id);
         intent.putExtras(bundle);
         startActivityForResult(intent, 2);
     }

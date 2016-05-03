@@ -1,9 +1,12 @@
 package ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -57,6 +60,10 @@ public class RegistActivity extends Activity {
         bt_reginst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_username.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(et_password.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(et_phone.getWindowToken(), 0);
                 path = String.format(path, et_username.getText().toString(), et_password.getText().toString(), et_phone.getText().toString());
                 StringRequest stringRequest = new StringRequest(path,
                         new Response.Listener<String>() {

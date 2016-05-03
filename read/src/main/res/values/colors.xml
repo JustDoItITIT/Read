@@ -7,4 +7,11 @@
     <color name="item_label">#ff000000</color>
     <color name="transparent">#00000000</color>
     <color name="gray_bg">#fff0f0f0</color>
+    <color name="text_color">#43353c</color>
+    <color name="text_color_night">#fff</color>
+    <color name="blue">#09f</color>
+    <color name="bg_1">#F7F7F7</color>
+    <color name="bg_2">#F0E4D0</color>
+    <color name="bg_3">#BED9C2</color>
+    <color name="bg_4">#E1C7C9</color>
 </resources>

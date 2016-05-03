@@ -14,7 +14,6 @@ public class ReadApplication extends Application {
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
-
     @Override
     public void onCreate() {
         instance = this;
@@ -37,5 +36,6 @@ public class ReadApplication extends Application {
         editor.putBoolean("logined",isLogined);
         editor.commit();
     }
+
 
 }

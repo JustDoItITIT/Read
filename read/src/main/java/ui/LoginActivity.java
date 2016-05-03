@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -60,6 +61,7 @@ public class LoginActivity extends Activity {
         bt_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String username = et_username.getText().toString();
                 String password = et_password.getText().toString();
                 path = String.format(path, username, password);
@@ -99,6 +101,9 @@ public class LoginActivity extends Activity {
                     }
                 });
                 mQueue.add(stringRequest);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_username.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(et_password.getWindowToken(), 0);
             }
         });
 
@@ -107,6 +112,9 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegistActivity.class);
                 startActivity(intent);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_username.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(et_password.getWindowToken(), 0);
             }
         });
 

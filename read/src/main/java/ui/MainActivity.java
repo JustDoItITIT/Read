@@ -9,8 +9,10 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -183,8 +185,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         vp.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(et_flag)
-                search_back.performClick();
+                if (et_flag)
+                    search_back.performClick();
                 return false;
             }
         });
@@ -223,10 +225,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         });
         vp.setOffscreenPageLimit(4);
-
+        setChild((ViewGroup) vp);
         animation = AnimationUtils.loadAnimation(this, R.anim.progress);
         animation.setRepeatCount(Animation.INFINITE);
-        animation.setRepeatMode(Animation.RESTART);animation.setInterpolator(new LinearInterpolator());
+        animation.setRepeatMode(Animation.RESTART);
+        animation.setInterpolator(new LinearInterpolator());
         iv_progress.setAnimation(animation);
         animation.startNow();
     }
@@ -289,6 +292,24 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             handler.sendEmptyMessageDelayed(0,1500);
         }
 
+    }
+
+    private void setChild(ViewGroup viewGroup){
+        int count =  viewGroup.getChildCount();
+        for(int i= 0 ; i < count ; i ++){
+            final int a = i;
+           if(viewGroup.getChildAt(i) instanceof  ViewGroup){
+               setChild((ViewGroup)viewGroup.getChildAt(i));
+           }else{
+               viewGroup.getChildAt(i).setOnTouchListener(new View.OnTouchListener() {
+                   @Override
+                   public boolean onTouch(View v, MotionEvent event) {
+                       Log.i("child" , "" + a);
+                       return false;
+                   }
+               });
+           }
+        }
     }
 
 }

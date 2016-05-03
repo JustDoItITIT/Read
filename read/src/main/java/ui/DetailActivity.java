@@ -324,6 +324,7 @@ public class DetailActivity extends Activity {
                                                 results.remove(0);
                                                 for(int i = 0 ; i < results.size();i ++){
                                                     int a = Integer.parseInt(results.get(i));
+                                                    if(a < 6)
                                                     setFlag(a,adapter);
                                                 }
                                                 Log.i("fuck", results.toString());
@@ -365,12 +366,15 @@ public class DetailActivity extends Activity {
 
 
     public void jump(int position){
-        Intent intent = new Intent(DetailActivity.this,ReadActivity.class);
+        Intent intent = new Intent(DetailActivity.this,MoreActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
-        bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
-        bundle.putInt("position", position);
-        bundle.putBoolean("detailactivity",true);
+//        bundle.putString("title", bd.getBooklist().get(position).getTitle_cha());
+//        bundle.putInt("ID", bd.getBooklist().get(position).getId_cha());
+//        bundle.putInt("catlogId",id);
+//        bundle.putInt("position", position);
+//        bundle.putBoolean("detailactivity",true);
+        bundle.putInt("ID",id);
+        bundle.putInt("performClick",position);
         intent.putExtras(bundle);
         startActivityForResult(intent, 2);
     }
